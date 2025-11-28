@@ -14,6 +14,7 @@ import {
     AlertDialogCancel
 } from "@/components/ui/alert-dialog";
 import FormInput from "./FormInput";
+import { InfoModal } from "../modal";
 
 export default function RegisterStep_1({ onNext }: { onNext: () => void }) {
 
@@ -152,21 +153,11 @@ export default function RegisterStep_1({ onNext }: { onNext: () => void }) {
                     </div>
                 </div>
             </div>
-            <AlertDialog open={modalOpen} onOpenChange={setModalOpen}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>Informacja</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            {modalMessage}
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel className="mt-2">
-                            Zamknij
-                        </AlertDialogCancel>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            <InfoModal
+                open={modalOpen}
+                onOpenChange={setModalOpen}
+                message={modalMessage}
+            />
         </>
     );
 }

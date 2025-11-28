@@ -11,6 +11,16 @@ export type FormData = {
     hotelName: string;
 };
 
+export type ObjectFormType = {
+    objectType: string;             // Hotel, Aparthotel itd.
+    category: string;               // Gwiazdki lub poziom standardu
+    website?: string;               // URL
+    googleCard?: string;            // Google Business link
+    bookingSystems?: string;        // wpis tekstowy
+    socialMedia?: string[];           // wpis tekstowy
+    logo?: FileList;                // upload pliku
+};
+
 export async function registerUser(formData: FormData) {
 
   const supabase = createClient(
@@ -148,12 +158,14 @@ export async function getUserId(token? : string) {
     return {data :data};
   }
 
-export async function getRegisterStatus(userId: string) : Promise<{ register_status: string; register_step: number } | null> {
+export async function getRegisterStatus(userId: string) : Promise<{ register_status: boolean; register_step: number } | null> {
 
    const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL as string,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
   );
+
+  console.log("Pobieranie statusu rejestracji dla userId:", userId);
 
   const { data, error } = await supabase.from('profiles')
   .select('register_status, register_step')
@@ -166,3 +178,36 @@ export async function getRegisterStatus(userId: string) : Promise<{ register_sta
   }
   return data;
 }
+
+export async function registerStep2(userId: string, formData: ObjectFormType) {
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
+  );
+  const { objectType, category, website, googleCard, bookingSystems, socialMedia } = formData;
+
+  try { 
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .update({ 
+        type_object: objectType,
+        standard: category,
+        website_url: website,
+        google_profile: googleCard,
+        b_system: bookingSystems,
+        social_media: socialMedia
+       })
+      .eq('id', userId);
+
+    if (profileError) {
+      console.error("Błąd aktualizacji profilu:", profileError);
+      return { error: profileError.message };
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error("Błąd podczas aktualizacji profilu:", error);
+    return { error: "Błąd serwera podczas aktualizacji profilu." };
+  }
+} 

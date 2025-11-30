@@ -1,18 +1,10 @@
 "use client";
 import { useForm } from "react-hook-form";
-import { registerUser, FormData, delay } from "./actions";
+import { registerUser, FormData } from "./actions";
 import { Country, City } from "country-state-city";
+import { delay } from "../utils";
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import {
-    AlertDialog,
-    AlertDialogContent,
-    AlertDialogHeader,
-    AlertDialogTitle,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogCancel
-} from "@/components/ui/alert-dialog";
 import FormInput from "./FormInput";
 import { InfoModal } from "../modal";
 
@@ -38,7 +30,7 @@ export default function RegisterStep_1({ onNext }: { onNext: () => void }) {
             setModalMessage(result.error);
             setModalOpen(true);
         } else {
-            setModalMessage("Konto zostało utworzone! sprawdź swój email aby je aktywować.");
+            setModalMessage("Konto zostało utworzone! sprawdź swój email aby je aktywować w pełni.");
             setModalOpen(true);
             setNextStep(true);
         }

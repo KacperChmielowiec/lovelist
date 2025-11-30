@@ -1,10 +1,9 @@
 "use client";  
-import Image from "next/image";
-import { useEffect, useState } from "react";
-import { createClient } from "@supabase/supabase-js";
+import { useState } from "react";
 import { createPagesBrowserClient} from "@supabase/auth-helpers-nextjs";
 import { useForm } from "react-hook-form";
 import { Loader2 } from "lucide-react";
+import { delay } from "./utils";
 export default function Home() {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -22,9 +21,11 @@ export default function Home() {
 
   const onSubmit = async (data: LoginForm) => {
     setIsSubmitting(true);
+    await delay(1000); // opcjonalne opóźnienie dla lepszego UX
     await handleLogin(data);
     setIsSubmitting(false);
   }
+
 const handleLogin = async (data: LoginForm) => {
   try {
     const { error } = await supabaseBrowser.auth.signInWithPassword({

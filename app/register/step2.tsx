@@ -1,11 +1,12 @@
 "use client";
-import { set, useForm } from "react-hook-form";
+import {useForm } from "react-hook-form";
 import FormInput from "./FormInput";
 import { getHotelStandard, getObjectTypes, uploadLogo, ObjectFormType, registerStep2 } from "./actions";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import CreatableSelect from "react-select/creatable";
 import { InfoModal } from "../modal";
+import { delay } from "../utils";
 
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const maxFileSize = 3 * 1024 * 1024; // 3MB
@@ -48,10 +49,10 @@ export default function RegisterStep_2({ onNext, userId }: { onNext: () => void,
     const onSubmit = async (data: ObjectFormType) => {
         console.log("Dane obiektu:", data);
         setIsLoading(true);
+        await delay(1000); // opcjonalne opóźnienie dla lepszego UX
         if (data.logo) await uploadLogoFile(data.logo);
         const result = await registerStep2(userId, data);
         if (result.error) {
-            console.error("Błąd podczas zapisywania danych obiektu:", result.error);
             setModalMessage(`Błąd podczas zapisywania danych obiektu: ${result.error}`);
             setModalOpen(true);
         } else {

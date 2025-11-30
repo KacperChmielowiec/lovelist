@@ -21,12 +21,13 @@ export type ObjectFormType = {
     logo?: FileList;                // upload pliku
 };
 
-export async function registerUser(formData: FormData) {
 
-  const supabase = createClient(
+ const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL as string,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
   );
+
+export async function registerUser(formData: FormData) {
 
   const { email, password, confirmPassword, country, city, hotelName } = formData;
 
@@ -87,16 +88,8 @@ export async function registerUser(formData: FormData) {
   }
 }
 
-export async function delay(ms: number) {
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-
 export async function getObjectTypes() : Promise<{ id: string; name: string }[]> {
-   const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
-  );
+
   const { data, error } = await supabase.from('object_types').select('*');
   if (error) {
     console.error("Błąd pobierania typów obiektów:", error);
@@ -107,10 +100,6 @@ export async function getObjectTypes() : Promise<{ id: string; name: string }[]>
 
 
 export async function getHotelStandard() : Promise<{ id: string; level: number }[]> {
-   const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
-  );
   const { data, error } = await supabase.from('hotel_standard').select('*');
   if (error) {
     console.error("Błąd pobierania typów obiektów:", error);
@@ -121,10 +110,6 @@ export async function getHotelStandard() : Promise<{ id: string; level: number }
 
 
 export async function getUserId(token? : string) {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
-  );
 
   const {data,error} = await supabase.auth.getUser(token);
 
@@ -137,11 +122,6 @@ export async function getUserId(token? : string) {
 
 
   export async function uploadLogo(userId: string, file: File) {
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
-    );
-
     const fileExt = file.name.split('.').pop();
     const fileName = `logo_${userId}.${fileExt}`;
     const filePath = `${fileName}`;
@@ -160,11 +140,6 @@ export async function getUserId(token? : string) {
 
 export async function getRegisterStatus(userId: string) : Promise<{ register_status: boolean; register_step: number } | null> {
 
-   const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
-  );
-
   console.log("Pobieranie statusu rejestracji dla userId:", userId);
 
   const { data, error } = await supabase.from('profiles')
@@ -179,12 +154,21 @@ export async function getRegisterStatus(userId: string) : Promise<{ register_sta
   return data;
 }
 
+
+export async function updateRegisterStatus(userId: string, step: number, status: boolean ) {
+    const { error } = await supabase
+      .from('profiles')
+      .update({ register_step: step, register_status: status })
+      .eq('id', userId);
+    if (error) {
+      console.error("Błąd aktualizacji statusu rejestracji:", error);
+      return { error: error.message };
+    }
+}
+
+
 export async function registerStep2(userId: string, formData: ObjectFormType) {
 
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
-  );
   const { objectType, category, website, googleCard, bookingSystems, socialMedia } = formData;
 
   try { 

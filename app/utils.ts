@@ -11,3 +11,7 @@ export async function getUserId() {
     }
     return data.user.id;
 }
+
+export async function delay(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}

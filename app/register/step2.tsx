@@ -1,7 +1,8 @@
 "use client";
 import {useForm } from "react-hook-form";
 import FormInput from "./FormInput";
-import { getHotelStandard, getObjectTypes, uploadLogo, ObjectFormType, registerStep2 } from "./actions";
+import { getHotelStandard, getObjectTypes, uploadLogo, registerStep2 } from "./actions";
+import { ObjectFormType } from './types'
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
 import CreatableSelect from "react-select/creatable";

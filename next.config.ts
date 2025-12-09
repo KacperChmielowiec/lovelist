@@ -1,7 +1,18 @@
-import type { NextConfig } from "next";
+// next.config.js
+const withSvgr = require('next-plugin-svgr');
 
-const nextConfig: NextConfig = {
-  /* config options here */
-};
+module.exports = withSvgr({
+// Source - https://stackoverflow.com/a
+// Posted by Moeid Kh
+// Retrieved 2025-12-08, License - CC BY-SA 4.0
 
-export default nextConfig;
+turbopack: {
+  rules: {
+    '*.svg': {
+      loaders: ['@svgr/webpack'],
+      as: '*.js',
+    },
+  },
+},
+
+});

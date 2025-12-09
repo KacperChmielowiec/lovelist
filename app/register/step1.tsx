@@ -1,12 +1,15 @@
 "use client";
 import { useForm } from "react-hook-form";
-import { registerUser, FormData } from "./actions";
+import { registerUser } from "./actions";
 import { Country, City } from "country-state-city";
 import { delay } from "../utils";
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import FormInput from "./FormInput";
 import { InfoModal } from "../modal";
+import { FormData } from "./types"
+import { createPagesBrowserClient } from '@supabase/auth-helpers-nextjs';
+import {  ChevronLeftIcon } from "../icons"
 
 export default function RegisterStep_1({ onNext }: { onNext: () => void }) {
 
@@ -18,7 +21,7 @@ export default function RegisterStep_1({ onNext }: { onNext: () => void }) {
     const [modalOpen, setModalOpen] = useState(false);
     const [nextStep, setNextStep] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
-
+    const supabase = createPagesBrowserClient();
     const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = useForm<FormData>();
 
     const onSubmit = async (data: FormData) => {
@@ -33,6 +36,10 @@ export default function RegisterStep_1({ onNext }: { onNext: () => void }) {
             setModalMessage("Konto zostało utworzone! sprawdź swój email aby je aktywować w pełni.");
             setModalOpen(true);
             setNextStep(true);
+            await supabase.auth.signInWithPassword({
+                email: data.email,
+                password: data.password
+            });
         }
         setIsLoading(false);
     };
@@ -46,8 +53,8 @@ export default function RegisterStep_1({ onNext }: { onNext: () => void }) {
 
     return (
         <>
-            <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">
-                <div className="sm:mx-auto sm:w-full sm:max-w-sm">
+            <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8 ">
+                <div className="sm:mx-auto sm:w-full sm:max-w-sm bg-gray-800/40 backdrop-blur p-6 rounded-xl shadow-lg border border-gray-700">
                     <h1 className="text-2xl mb-4 font-bold text-gray-100">Rejestracja</h1>
                     <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -56,7 +63,7 @@ export default function RegisterStep_1({ onNext }: { onNext: () => void }) {
                                 name="hotelName"
                                 register={register}
                                 error={errors.hotelName}
-                                rules={{required: "Nazwa hotelu jest wymagana"}}
+                                rules={{ required: "Nazwa hotelu jest wymagana" }}
                                 type="text"
                             />
                             <FormInput
@@ -66,7 +73,7 @@ export default function RegisterStep_1({ onNext }: { onNext: () => void }) {
                                 register={register}
                                 error={errors.country}
                                 value={countryCode}
-                                rules={{required: "Kraj jest wymagany"}}
+                                rules={{ required: "Kraj jest wymagany" }}
                                 onChange={(e) => {
                                     const selected = e.target.value;
                                     setCountryCode(selected);
@@ -87,7 +94,7 @@ export default function RegisterStep_1({ onNext }: { onNext: () => void }) {
                                 type="select"
                                 name="city"
                                 register={register}
-                                rules={{required: "Miasto jest wymagane"}}
+                                rules={{ required: "Miasto jest wymagane" }}
                                 error={errors.city}
                                 disabled={!countryCode}
                             >
@@ -102,7 +109,7 @@ export default function RegisterStep_1({ onNext }: { onNext: () => void }) {
                                 label="Email"
                                 name="email"
                                 register={register}
-                                rules={{required: "Email jest wymagany", pattern: {value: /^\S+@\S+$/i, message: "Nieprawidłowy format email"}}}
+                                rules={{ required: "Email jest wymagany", pattern: { value: /^\S+@\S+$/i, message: "Nieprawidłowy format email" } }}
                                 error={errors.email}
                                 type="email"
                             />
@@ -132,7 +139,7 @@ export default function RegisterStep_1({ onNext }: { onNext: () => void }) {
                                 error={errors.confirmPassword}
                                 type="password"
                             />
-
+                            
                             <button
                                 type="submit"
                                 disabled={isSubmitting}

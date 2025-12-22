@@ -5,11 +5,12 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { delay } from "../utils";
 import { supabase } from "../client";
+
 export default function Home() {
 
     const [isSubmitting, setIsSubmitting] = useState(false);
-    const loginError = "NIepoprawne login lub hasło"
     const [isLoginError, setLoginError] = useState(false)
+    const loginError = "NIepoprawne login lub hasło"
 
     type LoginForm = {
         email: string;

@@ -99,6 +99,7 @@ export default function RegisterStep_4({ onNext, userId }: { onNext: () => void,
                     <div className="bg-gray-800/40 backdrop-blur p-6 rounded-xl shadow-lg border border-gray-700">
 
                         <form onSubmit={handleSubmit(onSubmit)} className="space-y-10">
+                              {/* @ts-ignore */}
                             <LoadScript googleMapsApiKey={GOOGLE_MAPS_KEY} libraries={LIBRARIES}>
                                 {/* -------------------- TYP & KATEGORIA ---    ----------------- */}
                                 <div>

@@ -54,6 +54,7 @@ export default function AddressAutocompleteMap<T extends FieldValues>({ name, la
                 control={control}
                 render={({ field }) => (
                     <Autocomplete
+                        //@ts-ignore
                         onLoad={(ref) => (autocompleteRef.current = ref)}
                         onPlaceChanged={handlePlaceChanged}
                     >

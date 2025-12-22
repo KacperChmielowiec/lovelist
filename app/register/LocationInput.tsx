@@ -1,12 +1,9 @@
 "use client";
-import { GoogleMap, LoadScript, Marker, Autocomplete } from "@react-google-maps/api";
-import { useRef, useState } from "react";
-import { FieldValues, Path, UseFormRegister} from "react-hook-form";
+import { GoogleMap, Marker, Autocomplete } from "@react-google-maps/api";
+import { FieldValues, Path } from "react-hook-form";
 import { Controller } from "react-hook-form";
 import { useFormContext } from "react-hook-form";
-
-
-
+import { useRef } from "react";
 
 const containerStyle = {
     width: "100%",
@@ -47,6 +44,8 @@ export default function AddressAutocompleteMap<T extends FieldValues>({ name, la
         setValue(`${name}.lat`, newLat);
         setValue(`${name}.lng`, newLng);
     };
+
+    
 
     return (
         <>

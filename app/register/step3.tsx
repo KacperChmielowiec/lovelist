@@ -58,7 +58,7 @@ export default function RegisterStep_3({ onNext, userId }: { onNext: () => void;
 
             <div className="sm:mx-auto sm:w-full sm:max-w-2xl">
                 <h1 className="text-2xl mb-6 font-bold text-gray-100">
-                    Sekcja B – Informacje o obiekcie
+                    Sekcja C – Informacje o obiekcie
                 </h1>
 
                 {/* KARTA PROFILOWA */}

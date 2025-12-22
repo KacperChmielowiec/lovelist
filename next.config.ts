@@ -1,18 +1,30 @@
-// next.config.js
 const withSvgr = require('next-plugin-svgr');
 
+/** @type {import('next').NextConfig} */
 module.exports = withSvgr({
-// Source - https://stackoverflow.com/a
-// Posted by Moeid Kh
-// Retrieved 2025-12-08, License - CC BY-SA 4.0
+  // 1. Wyłączenie map źródłowych w przeglądarce (domyślnie false, ale warto wymusić)
+  productionBrowserSourceMaps: false,
 
-turbopack: {
-  rules: {
-    '*.svg': {
-      loaders: ['@svgr/webpack'],
-      as: '*.js',
+  experimental: {
+    // 2. Wyłączenie map źródłowych po stronie serwera (opcja eksperymentalna)
+    serverSourceMaps: false,
+  },
+
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: [
+          {
+            loader: '@svgr/webpack',
+            options: {
+              // Możesz spróbować wymusić brak map źródłowych dla samego loadera SVGR
+              typescript: true,
+              ext: 'tsx',
+            },
+          },
+        ],
+        as: '*.js',
+      },
     },
   },
-},
-
 });

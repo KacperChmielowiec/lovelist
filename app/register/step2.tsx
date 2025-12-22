@@ -1,25 +1,24 @@
 "use client";
-import {useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import FormInput from "./FormInput";
 import { getHotelStandard, getObjectTypes, uploadLogo, registerStep2 } from "./actions";
-import { ObjectFormType } from './types'
+import { FormData2 } from './types'
 import { useEffect, useState } from "react";
 import { Loader2 } from "lucide-react";
-import CreatableSelect from "react-select/creatable";
 import { InfoModal } from "../modal";
 import { delay } from "../utils";
 
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const maxFileSize = 3 * 1024 * 1024; // 3MB
-type Option = { label: string; value: string };
+
 export default function RegisterStep_2({ onNext, userId }: { onNext: () => void, userId: string }) {
 
-    const { register, handleSubmit, setValue, formState: { errors } } = useForm<ObjectFormType>();
+    const { register, handleSubmit, formState: { errors } } = useForm<FormData2>();
     const [objectTypes, setObjectTypes] = useState<{ id: string; name: string }[]>([]);
     const [hotelStandards, setHotelStandards] = useState<{ id: string; level: number }[]>([]);
 
     const [modalMessage, setModalMessage] = useState("");
-    const [modalOpen, setModalOpen] = useState(false);  
+    const [modalOpen, setModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
     const fetchData = async () => {
@@ -47,11 +46,10 @@ export default function RegisterStep_2({ onNext, userId }: { onNext: () => void,
             }
         }
     };
-    const onSubmit = async (data: ObjectFormType) => {
+    const onSubmit = async (data: FormData2) => {
         console.log("Dane obiektu:", data);
         setIsLoading(true);
         await delay(1000); // opcjonalne opóźnienie dla lepszego UX
-        if (data.logo) await uploadLogoFile(data.logo);
         const result = await registerStep2(userId, data);
         if (result.error) {
             setModalMessage(`Błąd podczas zapisywania danych obiektu: ${result.error}`);
@@ -60,6 +58,7 @@ export default function RegisterStep_2({ onNext, userId }: { onNext: () => void,
             console.log("Dane obiektu zapisane pomyślnie");
             onNext();
         }
+        if (data.logo) await uploadLogoFile(data.logo);
         setIsLoading(false);
     };
 
@@ -70,7 +69,7 @@ export default function RegisterStep_2({ onNext, userId }: { onNext: () => void,
 
             <div className="sm:mx-auto sm:w-full sm:max-w-2xl">
                 <h1 className="text-2xl mb-6 font-bold text-gray-100">
-                    Sekcja A – Informacje o obiekcie
+                    Sekcja B – Informacje o obiekcie
                 </h1>
 
                 {/* KARTA PROFILOWA */}
@@ -153,7 +152,7 @@ export default function RegisterStep_2({ onNext, userId }: { onNext: () => void,
                                 Rezerwacje & Social Media
                             </h2>
 
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="grid grid-cols-1 gap-6">
                                 <FormInput
                                     label="Systemy rezerwacji"
                                     name="bookingSystems"
@@ -161,34 +160,30 @@ export default function RegisterStep_2({ onNext, userId }: { onNext: () => void,
                                     placeholder="Np. booking.com, tripadvisor, własny system"
                                     register={register}
                                 />
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-100">
-                                        Linki do mediów społecznościowych
-                                    </label>
-                                    <div className="mt-2 w-full">
-                                        <CreatableSelect<Option, true>
-                                            onChange={(options) => {
-                                                const values = options?.map((o) => o.value) ?? [];
-                                                setValue("socialMedia", values);
-                                            }}
-                                            isMulti
-                                            placeholder="Wpisz URL i naciśnij Entesr"
-                                            styles={{
-                                                container: (base) => ({
-                                                    ...base,
-                                                    width: "100%",        // <--- Wymagane!
-                                                }),
-                                                control: (base) => ({
-                                                    ...base,
-                                                    width: "100%",        // <--- Wymagane!
-                                                    minHeight: "42px",
-                                                    backgroundColor: "#ffffff0d",
-                                                    borderColor: "#3b3b3b",
-                                                }),
-                                            }}
-                                        />
-                                    </div>
-                                </div>
+                                <label className="block text-sm font-medium text-gray-100">
+                                    Linki do mediów społecznościowych
+                                </label>
+                                <FormInput
+                                    label="facebook"
+                                    name="facebook"
+                                    type="text"
+                                    placeholder="link do mediów"
+                                    register={register}
+                                />
+                                <FormInput
+                                    label="linkedin"
+                                    name="linkedin"
+                                    type="text"
+                                    placeholder="link do mediów"
+                                    register={register}
+                                />
+                                <FormInput
+                                    label="instagram"
+                                    name="instagram"
+                                    type="text"
+                                    placeholder="link do mediów"
+                                    register={register}
+                                />
                             </div>
                         </div>
 
@@ -225,7 +220,7 @@ export default function RegisterStep_2({ onNext, userId }: { onNext: () => void,
                         <div className="flex justify-end">
                             <button disabled={isLoading} className="rounded-md bg-indigo-500 px-4 py-2 font-semibold text-white hover:bg-indigo-400">
                                 {isLoading ? "" : "Zapisz dane"}
-                                {isLoading && <Loader2 className="ml-2 h-8 w-8 animate-spin inline-block" />}
+                                {isLoading && <Loader2 className="mx-6 h-8 w-8 animate-spin inline-block" />}
                             </button>
                         </div>
 

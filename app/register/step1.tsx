@@ -1,34 +1,28 @@
 "use client";
 import { useForm } from "react-hook-form";
-import { registerUser } from "./actions";
-import { Country, City } from "country-state-city";
+import { registerUser } from "@/app/register/actions";
+import { Country } from "country-state-city";
 import { delay } from "../utils";
 import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
-import FormInput from "./FormInput";
 import { InfoModal } from "../modal";
 import { FormData } from "./types"
-import { createPagesBrowserClient } from '@supabase/auth-helpers-nextjs';
-import {  ChevronLeftIcon } from "../icons"
+import FormInput from "./FormInput";
 
 export default function RegisterStep_1({ onNext }: { onNext: () => void }) {
 
-    const [countryCode, setCountryCode] = useState<string>("");
     const countries = Country.getAllCountries();
-    const cities = countryCode ? City.getCitiesOfCountry(countryCode) : [];
-
     const [isLoading, setIsLoading] = useState(false);
     const [modalOpen, setModalOpen] = useState(false);
     const [nextStep, setNextStep] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
-    const supabase = createPagesBrowserClient();
-    const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitting } } = useForm<FormData>();
+    const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<FormData>();
 
     const onSubmit = async (data: FormData) => {
         setIsLoading(true);
         await delay(1000); // opcjonalne opóźnienie dla lepszego UX
-        const result = await registerUser(data);
-
+        const result = await registerUser(data)
+        console.log("result_register",result)
         if (result.error) {
             setModalMessage(result.error);
             setModalOpen(true);
@@ -36,10 +30,6 @@ export default function RegisterStep_1({ onNext }: { onNext: () => void }) {
             setModalMessage("Konto zostało utworzone! sprawdź swój email aby je aktywować w pełni.");
             setModalOpen(true);
             setNextStep(true);
-            await supabase.auth.signInWithPassword({
-                email: data.email,
-                password: data.password
-            });
         }
         setIsLoading(false);
     };
@@ -72,39 +62,23 @@ export default function RegisterStep_1({ onNext }: { onNext: () => void }) {
                                 name="country"
                                 register={register}
                                 error={errors.country}
-                                value={countryCode}
                                 rules={{ required: "Kraj jest wymagany" }}
-                                onChange={(e) => {
-                                    const selected = e.target.value;
-                                    setCountryCode(selected);
-
-                                    const country = countries.find((c) => c.isoCode === selected);
-                                    setValue("country", country?.name ?? "");
-                                }}
                             >
                                 <option className="text-gray-800" value="">Wybierz kraj</option>
                                 {countries.map((c) => (
-                                    <option className="text-gray-800" key={c.isoCode} value={c.isoCode}>
+                                    <option className="text-gray-800" key={c.name} value={c.name}>
                                         {c.name}
                                     </option>
                                 ))}
                             </FormInput>
                             <FormInput
                                 label="Miasto"
-                                type="select"
+                                type="text"
                                 name="city"
                                 register={register}
                                 rules={{ required: "Miasto jest wymagane" }}
                                 error={errors.city}
-                                disabled={!countryCode}
-                            >
-                                <option className="text-gray-800" value="">Wybierz miasto</option>
-                                {cities?.map((c, index) => (
-                                    <option className="text-gray-800" key={index} value={c.name}>
-                                        {c.name}
-                                    </option>
-                                ))}
-                            </FormInput>
+                            />
                             <FormInput
                                 label="Email"
                                 name="email"

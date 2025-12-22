@@ -1,59 +1,73 @@
+"use client"
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "./ui/modal";
+import { AddressAccountInfo } from "./types";
+import { useForm, Controller } from "react-hook-form";
+import { useEffect, useState } from "react";
+import { Country } from "country-state-city";
+import { Loader2 } from "lucide-react";
 import Button from "./ui/button/Button";
 import Input from "./form/input/InputField";
+import Select from "./form/Select"
 import Label from "./form/Label";
+import { UpdateAddressAccount } from "./actions";
 
-export default function UserAddressCard() {
+
+export default function UserAddressCard({ data }: { data: AddressAccountInfo }) {
+
   const { isOpen, openModal, closeModal } = useModal();
-  const handleSave = () => {
-    // Handle save logic here
-    console.log("Saving changes...");
-    closeModal();
-  };
+  const [errorModal, setErrorModal] = useState(false)
+  const [locationInfo, setLocationInfo] = useState<AddressAccountInfo>(data)
+
+  const { register, handleSubmit, formState: { errors, isSubmitting }, control } = useForm<AddressAccountInfo>({
+    defaultValues: {
+      ...data
+    }
+  })
+  
+
+  const onSubmit = async (data: AddressAccountInfo) => {
+    setLocationInfo(data)
+    const { error } = await UpdateAddressAccount(data)
+    if (error) {
+      setErrorModal(true)
+    }else{
+      closeModal()
+    }
+  }
+
+  useEffect(() => {
+    if(!isOpen)
+      setErrorModal(false)
+  },[isOpen])
+
+  const countries = Country.getAllCountries().map(c => ({ label: c.name, value: c.name }));
+
   return (
     <>
       <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
-              Address
+              Adres obiektu
             </h4>
 
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
               <div>
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  Country
+                  Kraj
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  United States.
+                  {locationInfo?.country}
                 </p>
               </div>
 
               <div>
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  City/State
+                  Miasto
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  Phoenix, Arizona, United States.
-                </p>
-              </div>
-
-              <div>
-                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  Postal Code
-                </p>
-                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  ERT 2489
-                </p>
-              </div>
-
-              <div>
-                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  TAX ID
-                </p>
-                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  AS4568384
+                  {locationInfo?.city}
                 </p>
               </div>
             </div>
@@ -86,33 +100,40 @@ export default function UserAddressCard() {
         <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Edit Address
+              Edytuj adres
             </h4>
             <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-              Update your details to keep your profile up-to-date.
+              Zmień dane dotyczące adresu twojego obiektu
             </p>
           </div>
-          <form className="flex flex-col">
+          {errorModal && <div className="border border-t-0 border-red-400 rounded-b bg-red-100 mr-10 mb-4 px-4 py-1 text-red-700">
+            <p>Bład w przetwarzaniu formularz</p>
+          </div>}
+          <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
             <div className="px-2 overflow-y-auto custom-scrollbar">
               <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                 <div>
-                  <Label>Country</Label>
-                  <Input type="text" value="United States" />
+                  <Label>Kraj</Label>
+                  <Controller
+                    name="country"
+                    control={control}
+                    rules={{ required: 'Wybierz kraj' }}
+                    render={({ field, fieldState }) => (
+                      <>
+                        <Select
+                          {...field}
+                          options={countries}
+                          onChange={(val) => field.onChange(val)}
+                        />
+                        {fieldState.error && <p style={{ color: 'red' }}>{fieldState.error.message}</p>}
+                      </>
+                    )}
+                  />
                 </div>
 
                 <div>
-                  <Label>City/State</Label>
-                  <Input type="text" value="Arizona, United States." />
-                </div>
-
-                <div>
-                  <Label>Postal Code</Label>
-                  <Input type="text" value="ERT 2489" />
-                </div>
-
-                <div>
-                  <Label>TAX ID</Label>
-                  <Input type="text" value="AS4568384" />
+                  <Label>Miasto</Label>
+                  <Input type="text" value={data?.city} register={register} rules={{ required: "Wybierz miasto" }} hint={errors.city} error={!!errors.city} name="city" />
                 </div>
               </div>
             </div>
@@ -120,8 +141,9 @@ export default function UserAddressCard() {
               <Button size="sm" variant="outline" onClick={closeModal}>
                 Close
               </Button>
-              <Button size="sm" onClick={handleSave}>
+              <Button size="sm">
                 Save Changes
+                {isSubmitting && <Loader2 className="ml-2 h-5 w-5 animate-spin inline-block" />}
               </Button>
             </div>
           </form>

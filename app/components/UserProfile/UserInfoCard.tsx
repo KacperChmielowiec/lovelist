@@ -1,67 +1,120 @@
+"use client"
 import { useModal } from "../../hooks/useModal";
 import { Modal } from "./ui/modal";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { isPhoneNumber } from "./utils";
+import { BaseAccountInfo } from "./types"
+import { Loader2 } from "lucide-react";
 import Button from "./ui/button/Button";
 import Input from "./form/input/InputField";
+import Select from "./form/Select";
 import Label from "./form/Label";
+import { UpdateBaseAccountInfo } from "./actions";
 
-export default function UserInfoCard() {
+
+export default function UserInfoCard({ data }: { data: BaseAccountInfo }) {
+
   const { isOpen, openModal, closeModal } = useModal();
-  const handleSave = () => {
-    // Handle save logic here
-    console.log("Saving changes...");
-    closeModal();
-  };
+  const [accountInfo, setAccountInfo] = useState<BaseAccountInfo>(data)
+  const [errorModal, setErrorModal] = useState(false)
+
+  const { register, handleSubmit, formState: { errors, isSubmitting }, setValue } = useForm<BaseAccountInfo>({
+    defaultValues: {
+      ...data
+    }
+  })
+
+  const onSubmit = async (data: BaseAccountInfo) => {
+    setAccountInfo(data)
+    const { error } = await UpdateBaseAccountInfo(data)
+    if (error) {
+      setErrorModal(true)
+    } else {
+      closeModal();
+    }
+
+  }
+
+  const standardOptions = [
+    { label: "1 gwiazdka", value: 4 },
+    { label: "2 gwiazdki", value: 5 },
+    { label: "3 gwiazdki", value: 6 },
+    { label: "4 gwiazdki", value: 7 },
+    { label: "5 gwiazdek", value: 8 },
+  ]
+
+  const hotelTypesOptions = [
+    { label: "hotel", value: 1 },
+    { label: "spa", value: 2 },
+    { label: "apartamenty", value: 3 },
+    { label: "inne", value: 4 },
+  ]
+
+  const hotelStandard = standardOptions.find(o => (o.value == accountInfo.standard))?.label ?? "-"
+
+  const ObjectType = hotelTypesOptions.find(o => (o.value == accountInfo.object_type.value))?.label ?? "-"
+
+
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
-            Personal Information
+            Informacje o obiekcie
           </h4>
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                First Name
+                Nazwa Hotelu
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Musharof
+                {accountInfo.hotel_name}
               </p>
             </div>
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Last Name
+                Strona hotelu
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Chowdhury
+                {`${accountInfo.webiste_url ?? "-"}`}
               </p>
             </div>
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Email address
+                Email
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                randomuser@pimjo.com
+                {`${accountInfo.email ?? "-"}`}
               </p>
             </div>
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Phone
+                Telefon
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                +09 363 398 46
+                {`${accountInfo.phone?.length ? accountInfo.phone : "-"}`}
               </p>
             </div>
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Bio
+                Standard obiektu
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                Team Manager
+                {hotelStandard}
+              </p>
+            </div>
+            <div>
+              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                Typ obiektu
+              </p>
+              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                {ObjectType}
               </p>
             </div>
           </div>
@@ -94,76 +147,51 @@ export default function UserInfoCard() {
         <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Edit Personal Information
+              Edytuj informacje:
             </h4>
             <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
-              Update your details to keep your profile up-to-date.
+              Zaktualizuj dane, jeśli się zmieniły
             </p>
           </div>
-          <form className="flex flex-col">
+          {errorModal && <div className="border border-t-0 border-red-400 rounded-b bg-red-100 mr-10 mb-4 px-4 py-1 text-red-700">
+            <p>Bład w przetwarzaniu formularz</p>
+          </div>}
+          <form className="flex flex-col" onSubmit={handleSubmit(onSubmit)}>
             <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
-              <div>
-                <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                  Social Links
-                </h5>
-
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div>
-                    <Label>Facebook</Label>
-                    <Input
-                      type="text"
-                      value="https://www.facebook.com/PimjoHQ"
-                    />
-                  </div>
-
-                  <div>
-                    <Label>X.com</Label>
-                    <Input type="text" value="https://x.com/PimjoHQ" />
-                  </div>
-
-                  <div>
-                    <Label>Linkedin</Label>
-                    <Input
-                      type="text"
-                      value="https://www.linkedin.com/company/pimjo"
-                    />
-                  </div>
-
-                  <div>
-                    <Label>Instagram</Label>
-                    <Input type="text" value="https://instagram.com/PimjoHQ" />
-                  </div>
-                </div>
-              </div>
               <div className="mt-7">
                 <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
-                  Personal Information
+                  Informacje o obiekcie
                 </h5>
 
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>First Name</Label>
-                    <Input type="text" value="Musharof" />
+                    <Label>Nazwa hotelu</Label>
+                    <Input rules={{ required: "Podaj nazwe hotelu/obiektu" }} type="text" value={accountInfo.hotel_name} register={register} name="hotel_name" hint={errors.hotel_name} error={!!errors.hotel_name} />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Last Name</Label>
-                    <Input type="text" value="Chowdhury" />
+                    <Label>Strona hotelu</Label>
+                    <Input rules={{ required: "Podaj strone hotelu/obiektu" }} type="text" value={accountInfo.webiste_url} register={register} name="webiste_url" hint={errors.webiste_url} error={!!errors.webiste_url} />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Email Address</Label>
-                    <Input type="text" value="randomuser@pimjo.com" />
+                    <Label>Adres email</Label>
+                    <Input rules={{ required: "Email jest wymagany" }} type="email" value={accountInfo.email} register={register} name="email" hint={errors.email} error={!!errors.email} />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Phone</Label>
-                    <Input type="text" value="+09 363 398 46" />
+                    <Label>Telefon</Label>
+                    <Input type="tel" value={accountInfo.phone} register={register} name="phone" hint={errors.phone} error={!!errors.phone} rules={{
+                      validate: (val) => (isPhoneNumber(val as string) || !val ) || "Nieprawidłowy numer telefonu"
+                    }} />
                   </div>
-
-                  <div className="col-span-2">
-                    <Label>Bio</Label>
-                    <Input type="text" value="Team Manager" />
+                  <div className="col-span-2 lg:col-span-1">
+                    <Label>Standard obiektu (gwiazdki)</Label>
+                    <Select options={standardOptions} onChange={(val) => setValue("standard", Number(val))} />
+                  </div>
+                  <div className="col-span-2 lg:col-span-1">
+                    <Label>Typ obiektu</Label>
+                    <Select options={hotelTypesOptions} onChange={(val) => setValue('object_type.value', Number(val))} />
                   </div>
                 </div>
               </div>
@@ -172,8 +200,9 @@ export default function UserInfoCard() {
               <Button size="sm" variant="outline" onClick={closeModal}>
                 Close
               </Button>
-              <Button size="sm" onClick={handleSave}>
+              <Button size="sm">
                 Save Changes
+                {isSubmitting && <Loader2 className="ml-2 h-5 w-5 animate-spin inline-block" />}
               </Button>
             </div>
           </form>

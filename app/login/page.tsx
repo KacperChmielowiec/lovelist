@@ -1,28 +1,21 @@
 "use client";
-import { useEffect, useState } from "react";
-import { createPagesBrowserClient } from "@supabase/auth-helpers-nextjs";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { delay } from "../utils";
-import { removeAllUSer } from "../register/actions";
+import { supabase } from "../client";
 export default function Home() {
 
     const [isSubmitting, setIsSubmitting] = useState(false);
     const loginError = "NIepoprawne login lub hasło"
     const [isLoginError, setLoginError] = useState(false)
-    const supabaseBrowser = createPagesBrowserClient({
-        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-        supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
-    });
 
     type LoginForm = {
         email: string;
         password: string;
     };
-    useEffect(() => {
-        removeAllUSer()
-    },[])
+
 
     const { register, handleSubmit, formState: { errors } } = useForm<LoginForm>();
     const router = useRouter();
@@ -36,7 +29,7 @@ export default function Home() {
 
     const handleLogin = async (data: LoginForm) => {
         try {
-            const { error } = await supabaseBrowser.auth.signInWithPassword({
+            const { error } = await supabase.auth.signInWithPassword({
                 email: data.email,
                 password: data.password,
             });
@@ -54,9 +47,6 @@ export default function Home() {
             return { error: "Nieoczekiwany błąd podczas logowania." };
         }
     };
-
-
-
 
     return (
         <div className="flex min-h-full flex-col justify-center px-6 py-12 lg:px-8">

@@ -27,13 +27,15 @@ export type FormData5 = {
 
 }
 
-export type ObjectFormType = {
+export type FormData2 = {
   objectType: string;             // Hotel, Aparthotel itd.
   category: string;               // Gwiazdki lub poziom standardu
   website?: string;               // URL
   googleCard?: string;            // Google Business link
   bookingSystems?: string;        // wpis tekstowy
-  socialMedia?: string[];           // wpis tekstowy
+  facebook: string;
+  linkedin: string;
+  instagram: string;
   logo?: FileList;                // upload pliku
 };
 
@@ -58,6 +60,7 @@ export enum locationType {
 }
 
 export interface EventItem {
+  id_event?: number
   name: string;
   url: string;
   description: string;
@@ -90,3 +93,19 @@ export interface FormData4 {
   events: EventItem[];
   attractions: EventItem[]
 }
+
+export type ClientType = {
+   key: number,
+   label: string
+}
+
+export type SeasonType = {
+   key: number,
+   label: string
+}
+
+export type StayTimeType = {
+   key: number,
+   label: string
+}
+

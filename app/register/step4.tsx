@@ -47,7 +47,7 @@ export default function RegisterStep_4({ onNext, userId }: { onNext: () => void,
     const appendEventWrapper = () => {
         setEventsExpanded(prev => prev.map(v => v = false))
         setEventsExpanded(prev => [...prev, true])
-        appendEvent({ type: locationType.event, location: { address: "", lat: 0, lng: 0 } } as EventItem)
+        appendEvent({ type: locationType.event, location: { address: "", lat: 0, lng: 0 }, date: "2024-01-01" } as EventItem)
     }
 
     const removeEventWrapper = (index: number) => {
@@ -92,7 +92,7 @@ export default function RegisterStep_4({ onNext, userId }: { onNext: () => void,
 
                 <div className="sm:mx-auto sm:w-full sm:max-w-2xl">
                     <h1 className="text-2xl mb-6 font-bold text-gray-100">
-                        Sekcja A – Informacje o obiekcie
+                        Sekcja D – Informacje o miejscach
                     </h1>
 
                     {/* KARTA PROFILOWA */}

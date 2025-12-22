@@ -1,21 +1,12 @@
 // app/register/actions.ts
 "use server";
-import { createClient } from '@supabase/supabase-js';
-import { ObjectFormType, FormData, FormData3, FormData4, FormData5 } from "./types";
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL as string,
-  process.env.SUPABASE_SERVICE_ROLE_KEY as string
-);
-
-export async function removeAllUSer()
-{
-  const result = await supabase.auth.admin.deleteUser("8f8258bd-a0c6-44b2-94b6-8a602822d74b", false);
-  console.log(result)
-}
+import { createClientServer as createClientAsync } from "@/app/auth/clientServer"
+import { FormData, FormData3, FormData4, FormData5, FormData2 } from "./types";
 
 
 export async function registerUser(formData: FormData) {
 
+  const supabase = await createClientAsync()
   const { email, password, confirmPassword, country, city, hotelName } = formData;
 
   if (password !== confirmPassword) {
@@ -36,7 +27,13 @@ export async function registerUser(formData: FormData) {
     const { data: user, error: errorSignUp } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        // Auto-confirm email without verification
+        data: {
+          email_confirm: true
+        }
 
+      },
     });
 
     if (errorSignUp) {
@@ -67,7 +64,6 @@ export async function registerUser(formData: FormData) {
       return { error: 'Nie udało się utworzyć profilu użytkownika. Rejestracja anulowana.' };
     }
 
-
     return { success: true };
 
 
@@ -78,6 +74,7 @@ export async function registerUser(formData: FormData) {
 
 export async function getObjectTypes(): Promise<{ id: string; name: string }[]> {
 
+  const supabase = await createClientAsync()
   const { data, error } = await supabase.from('object_types').select('*');
   if (error) {
     console.error("Błąd pobierania typów obiektów:", error);
@@ -88,7 +85,7 @@ export async function getObjectTypes(): Promise<{ id: string; name: string }[]> 
 
 
 export async function getSeasons(): Promise<{ id: string; season: string }[]> {
-
+  const supabase = await createClientAsync()
   const { data, error } = await supabase.from('seasons_table').select('*');
   if (error) {
     console.error("Błąd pobierania typów obiektów:", error);
@@ -98,7 +95,7 @@ export async function getSeasons(): Promise<{ id: string; season: string }[]> {
 }
 
 export async function getStayTime(): Promise<{ id: string; period: string }[]> {
-
+  const supabase = await createClientAsync()
   const { data, error } = await supabase.from('stay_length_table').select('*');
   if (error) {
     console.error("Błąd pobierania typów obiektów:", error);
@@ -110,6 +107,7 @@ export async function getStayTime(): Promise<{ id: string; period: string }[]> {
 
 
 export async function getHotelStandard(): Promise<{ id: string; level: number }[]> {
+  const supabase = await createClientAsync()
   const { data, error } = await supabase.from('hotel_standard').select('*');
   if (error) {
     console.error("Błąd pobierania typów obiektów:", error);
@@ -119,6 +117,7 @@ export async function getHotelStandard(): Promise<{ id: string; level: number }[
 }
 
 export async function getGuestTypes(): Promise<{ id: string; guest_type: string }[]> {
+  const supabase = await createClientAsync()
   const { data, error } = await supabase.from('guest_types_table').select('*');
   if (error) {
     console.error("Błąd pobierania typów obiektów:", error);
@@ -130,6 +129,7 @@ export async function getGuestTypes(): Promise<{ id: string; guest_type: string 
 
 
 export async function getUserId(token?: string) {
+  const supabase = await createClientAsync()
 
   const { data, error } = await supabase.auth.getUser(token);
 
@@ -142,6 +142,7 @@ export async function getUserId(token?: string) {
 
 
 export async function uploadLogo(userId: string, file: File) {
+  const supabase = await createClientAsync()
   const fileExt = file.name.split('.').pop();
   const fileName = `logo_${userId}.${fileExt}`;
   const filePath = `${fileName}`;
@@ -160,6 +161,7 @@ export async function uploadLogo(userId: string, file: File) {
 
 export async function getRegisterStatus(userId: string): Promise<{ register_status: boolean; register_step: number } | null> {
 
+  const supabase = await createClientAsync()
   console.log("Pobieranie statusu rejestracji dla userId:", userId);
 
   const { data, error } = await supabase.from('profiles')
@@ -177,6 +179,7 @@ export async function getRegisterStatus(userId: string): Promise<{ register_stat
 
 
 export async function updateRegisterStatus(userId: string, step: number, status: boolean) {
+  const supabase = await createClientAsync()
   const { error } = await supabase
     .from('profiles')
     .update({ register_step: step, register_status: status })
@@ -188,9 +191,10 @@ export async function updateRegisterStatus(userId: string, step: number, status:
 }
 
 
-export async function registerStep2(userId: string, formData: ObjectFormType) {
+export async function registerStep2(userId: string, formData: FormData2) {
+  const supabase = await createClientAsync()
 
-  const { objectType, category, website, googleCard, bookingSystems, socialMedia } = formData;
+  const { objectType, category, website, googleCard, bookingSystems, facebook, linkedin, instagram } = formData;
 
   try {
     const { error: profileError } = await supabase
@@ -201,7 +205,9 @@ export async function registerStep2(userId: string, formData: ObjectFormType) {
         website_url: website,
         google_profile: googleCard,
         b_system: bookingSystems,
-        social_media: socialMedia
+        facebook_url: facebook,
+        instagram_url: instagram,
+        linkedin_url: linkedin
       })
       .eq('id', userId);
 
@@ -218,6 +224,7 @@ export async function registerStep2(userId: string, formData: ObjectFormType) {
 }
 
 export async function registerStep3(userId: string, formData: FormData3) {
+  const supabase = await createClientAsync()
 
   const { room_number, bed_number, annual_occupancy, average_stay_length, clients_type, peak_season } = formData;
 
@@ -292,6 +299,8 @@ export async function registerStep4(userId: string, formData: FormData4) {
 
   }))
 
+  const supabase = await createClientAsync()
+
   const { error: eventError } = await supabase
     .from('event_local_info')
     .insert(dataToInsert)
@@ -317,6 +326,7 @@ export async function registerStep5(userId: string, formData: FormData5) {
     bag: formData.bag,
     fk_profile: userId
   }
+  const supabase = await createClientAsync()
 
   const { error: eventError } = await supabase
     .from('packages_table')

@@ -38,7 +38,7 @@ export default function RegisterStep_5({ onNext, userId }: { onNext: () => void,
         console.log("dane formularza", data);
         const result = await registerStep5(userId,data)
         if(result.error){
-            setModalMessage(`Bład w ptzetwarzaniu formularza: ${result.error}`)
+            setModalMessage(`Bład w przetwarzaniu formularza: ${result.error}`)
             setModalOpen(true)
            
         }else{

@@ -1,8 +1,8 @@
 import { useState } from "react";
 
 interface Option {
-  value: string;
-  label: string;
+  value: string | number;
+  label: string | number;
 }
 
 interface SelectProps {

@@ -261,7 +261,7 @@ export async function registerStep3(userId: string, formData: FormData3) {
       return { error: profileError.message };
     }
 
-    const guestToInsert = clients_type.map(c => ({ profile_id: userId, guest_type: c }))
+    const guestToInsert = clients_type.map(c => ({ place_fk: key.id, guest_type: c }))
 
     const { error: guestError } = await supabase
       .from('guest_type_items')

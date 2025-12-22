@@ -43,6 +43,7 @@ export default function RegisterSteps() {
         if(step === 5)
         {
             router.push("/dashboard")
+            setIsLoading(true)
             return
         }
          setStep(step + 1);

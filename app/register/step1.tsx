@@ -1,5 +1,5 @@
 "use client";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { registerUser } from "@/app/register/actions";
 import { Country } from "country-state-city";
 import { delay } from "../utils";
@@ -7,7 +7,9 @@ import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { InfoModal } from "../modal";
 import { FormData } from "./types"
+import { useAuth } from "../context/AuthContext";
 import FormInput from "./FormInput";
+
 
 export default function RegisterStep_1({ onNext }: { onNext: () => void }) {
 
@@ -17,6 +19,7 @@ export default function RegisterStep_1({ onNext }: { onNext: () => void }) {
     const [nextStep, setNextStep] = useState(false);
     const [modalMessage, setModalMessage] = useState("");
     const { register, handleSubmit, watch, formState: { errors, isSubmitting } } = useForm<FormData>();
+    const { setUser } = useAuth();
 
     const onSubmit = async (data: FormData) => {
         setIsLoading(true);
@@ -27,6 +30,7 @@ export default function RegisterStep_1({ onNext }: { onNext: () => void }) {
             setModalMessage(result.error);
             setModalOpen(true);
         } else {
+            setUser(result.user || null);
             setModalMessage("Konto zostało utworzone! sprawdź swój email aby je aktywować w pełni.");
             setModalOpen(true);
             setNextStep(true);

@@ -38,7 +38,7 @@ export default function RegisterSteps() {
         }
     }, [authLoading]);
 
-    const handleStep = async () => {
+    const handleStep = async (userId?: string) => {
         updateRegisterStatus(user?.id as string, step + 1 === 6 ? step : step + 1, step + 1 === 6 ? true : false);
         if(step === 5)
         {

@@ -64,7 +64,7 @@ export async function registerUser(formData: FormData) {
       return { error: 'Nie udało się utworzyć profilu użytkownika. Rejestracja anulowana.' };
     }
 
-    return { success: true };
+    return { success: true, user: user.user };
 
 
   } catch (err) {

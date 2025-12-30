@@ -6,6 +6,7 @@ import { User, SupabaseClient } from '@supabase/supabase-js'
 
 type AuthContextType = {
   user: User | null
+  setUser: (user: User | null) => void
   supabase: SupabaseClient
   isLoading: boolean
 }
@@ -44,7 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [supabase])
 
   return (
-    <AuthContext.Provider value={{ user, supabase, isLoading }}>
+    <AuthContext.Provider value={{ user, supabase, isLoading, setUser }}>
       {children}
     </AuthContext.Provider>
   )

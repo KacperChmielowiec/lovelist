@@ -23,13 +23,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const initializeAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       setUser(session?.user ?? null)
-      setIsLoading(false)
+      if (session?.user) {
+        setIsLoading(false)
+      }
     }
 
     initializeAuth()
 
     // 2. Słuchaj zmian stanu (login, logout, token refresh)
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoading(true)
+      console.log('Auth state changed:', session)
       setUser(session?.user ?? null)
       setIsLoading(false)
     })

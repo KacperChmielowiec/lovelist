@@ -12,6 +12,7 @@ import RegisterStep_5 from "./step5";
 import Stepper from "./stepper";
 
 export default function RegisterSteps() {
+
     const { user, isLoading: authLoading } = useAuth();
     const [step, setStep] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +23,10 @@ export default function RegisterSteps() {
         setIsLoading(true);
         if (user?.id) {
             const status = await getRegisterStatus(user.id);
-            if (status && status.register_status == true) router.push('/dashboard');
+            if (status && status.register_status == true){
+                router.push('/dashboard');
+                return;
+            }
             if (status && status.register_step) {
                 step = status.register_step
             }
@@ -32,18 +36,16 @@ export default function RegisterSteps() {
     };
 
     useEffect(() => {
-        if(authLoading)
-        {
-            setStatus()
+        if (!authLoading && user?.id) {
+            setStatus();
         }
     }, [authLoading]);
 
     const handleStep = async (userId?: string) => {
-        updateRegisterStatus(user?.id as string, step + 1 === 6 ? step : step + 1, step + 1 === 6 ? true : false);
+        await updateRegisterStatus(user?.id as string, step + 1 === 6 ? step : step + 1, step + 1 === 6 ? true : false);
         if(step === 5)
         {
-            router.push("/dashboard")
-            setIsLoading(true)
+            await router.push("/dashboard")
             return
         }
          setStep(step + 1);

@@ -9,13 +9,21 @@ import UserEventsCard from "../components/UserProfile/UserEventsCard";
 
 export default async function UserProfiles() {
 
-  const userInfo = await getHotelInformation()
-  const locationrInfo = await getHotelLocation()
-  const socialInfo = await getHotelSocialMedia()
-  const eventsInfo = await getHotelEvents()
-  const detailsInfo = await getHotelIDetails()
-
-  const isActive = await userIsActive()
+   const [
+    userInfo,
+    locationrInfo,
+    socialInfo,
+    eventsInfo,
+    detailsInfo,
+    isActive
+  ] = await Promise.all([
+    getHotelInformation(),
+    getHotelLocation(),
+    getHotelSocialMedia(),
+    getHotelEvents(),
+    getHotelIDetails(),
+    userIsActive(),
+  ])
 
   return (
     <>

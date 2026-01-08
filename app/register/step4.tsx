@@ -143,12 +143,10 @@ export default function RegisterStep_4({ onNext, userId }: { onNext: () => void,
                                                             >
                                                                 <option className="text-gray-800" value="">Wybierz kategorię</option>
                                                                 {eventCategoryKeys.map(key => (
-                                                                    <>
-                                                                     {/* @ts-ignore */}
+                                                                    // @ts-ignore
                                                                     <option className="text-gray-800" key={EventCategory[key]} value={EventCategory[key]}>
                                                                         {key}
                                                                     </option>
-                                                                    </>
                                                                 ))}
                                                             </FormInput>
                                                         </div>

@@ -8,6 +8,9 @@ module.exports = withSvgr({
   experimental: {
     // 2. Wyłączenie map źródłowych po stronie serwera (opcja eksperymentalna)
     serverSourceMaps: false,
+    serverActions: {
+      bodySizeLimit: '3mb',
+    },
   },
 
   turbopack: {
@@ -28,3 +31,6 @@ module.exports = withSvgr({
     },
   },
 });
+
+
+

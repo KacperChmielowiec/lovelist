@@ -50,16 +50,27 @@ export default function RegisterStep_2({ onNext, userId }: { onNext: () => void,
         console.log("Dane obiektu:", data);
         setIsLoading(true);
         await delay(1000); // opcjonalne opóźnienie dla lepszego UX
-        const result = await registerStep2(userId, data);
-        if (result.error) {
-            setModalMessage(`Błąd podczas zapisywania danych obiektu: ${result.error}`);
+        let result = null;
+        try {
+            result = await registerStep2(userId, data);
+
+            if (result.error) {
+                setModalMessage(`Błąd podczas zapisywania danych obiektu: ${result.error}`);
+                setModalOpen(true);
+            } else {
+                console.log("Dane obiektu zapisane pomyślnie");
+                onNext();
+            }
+            if (data.logo) await uploadLogoFile(data.logo);
+
+        } catch (error) {
+            setModalMessage(`Błąd podczas zapisywania danych obiektu: ${error}`);
             setModalOpen(true);
-        } else {
-            console.log("Dane obiektu zapisane pomyślnie");
-            onNext();
+            return;
+        } finally {
+            setIsLoading(false);
         }
-        if (data.logo) await uploadLogoFile(data.logo);
-        setIsLoading(false);
+
     };
 
     if (userId === null) return <div>Brak użytkownika</div>;

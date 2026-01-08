@@ -41,6 +41,10 @@ export default function RegisterSteps() {
         }
     }, [authLoading]);
 
+    useEffect(() => {
+        setStatus();
+    }, []);
+
     const handleStep = async (userId?: string) => {
         await updateRegisterStatus(user?.id as string, step + 1 === 6 ? step : step + 1, step + 1 === 6 ? true : false);
         if(step === 5)
